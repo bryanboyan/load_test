@@ -1,0 +1,63 @@
+tasks: [random_get_fine]
+
+requests:
+  quick_get:
+    url: "http://localhost:8080/quick"
+    method: GET
+  slow_get:
+    url: "http://localhost:8080/slow"
+    method: GET
+  random_get_fine:
+    url: "http://localhost:8080/random"
+    method: GET
+    params:
+      failure_rate: 0.2
+      max_sleep: 10
+  quick_post:
+    url: "http://localhost:8080/quick"
+    method: POST
+  slow_post:
+    url: "http://localhost:8080/slow"
+    method: POST
+  random_post_bad:
+    url: "http://localhost:8080/random"
+    method: POST
+    params:
+      failure_rate: 0.8
+      max_sleep: 20
+
+SHAPE_MODELS: # used as reference for reused shapes
+  aggressive: &aggressive_shape
+    - {time: 30, threads: 1, ramp: 1}
+    - {time: 60, threads: 10, ramp: 2}
+    - {time: 90, threads: 30, ramp: 5}
+    - {time: 120, threads: 100, ramp: 30}
+    - {time: 150, threads: 200, ramp: 40}
+    - {time: 180, threads: 10, ramp: 50}
+  medium: &medium_shape
+    - {time: 30, threads: 1, ramp: 1}
+    - {time: 60, threads: 5, ramp: 2}
+    - {time: 90, threads: 10, ramp: 2}
+    - {time: 120, threads: 30, ramp: 5}
+    - {time: 150, threads: 50, ramp: 5}
+    - {time: 180, threads: 10, ramp: 10}
+  slow: &slow_shape
+    - {time: 20, threads: 1, ramp: 1}
+    - {time: 40, threads: 5, ramp: 2}
+    - {time: 60, threads: 10, ramp: 2}
+    - {time: 80, threads: 30, ramp: 5}
+    - {time: 100, threads: 50, ramp: 5}
+    - {time: 120, threads: 10, ramp: 10}
+  test: &test_shape
+    - {time: 10, threads: 1, ramp: 1}
+
+shapes:
+  quick_get:
+    interval_ms: 500
+    shape: *aggressive_shape
+  slow_post:
+    interval_ms: 500
+    shape: *medium_shape
+  random_get_fine:
+    interval_ms: 500
+    shape: *slow_shape

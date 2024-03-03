@@ -1,0 +1,10 @@
+-[X] config.yaml
+    -[X] request
+    -[X] shape
+-[X] metrics
+-[X] request builder
+-[X] Threads
+-[X] Debug overall
+-[] data schema and plotly data
+-[] update storage
+-[] ideas multi core
