@@ -22,6 +22,7 @@ class RecorderBase(Thread):
                 if line is FLAG_FINISHED:
                     break
                 file.write(f"{line}\n")
+                file.flush()
                 self.queue.task_done()
 
     def stop(self):

@@ -25,4 +25,4 @@ def figure_pipeline(n) -> Figure:
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8081)
+    app.run_server(host="0.0.0.0", debug=True, port=8081)
