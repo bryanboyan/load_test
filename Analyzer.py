@@ -2,15 +2,14 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objs import Figure
-from Config import config
-from Metrics import DATA_FOLDER
+from tests.Config import config
 
 tasks = config.get_tasks()
-data_folder = f"{DATA_FOLDER}"
+DATA_FOLDER = "data"
 
 def build_load_dataframe() -> pd.DataFrame:
     load = pd.read_csv(
-        f"{data_folder}/load.csv", header=None, names=["timestamp", "task", "threads"]
+        f"{DATA_FOLDER}/load.csv", header=None, names=["timestamp", "task", "threads"]
     )
     if load.empty:
         raise FileNotFoundError("load.csv is empty")
@@ -32,7 +31,7 @@ def build_task_dataframes() -> dict[str,pd.DataFrame]:
     df_tasks = {}
     for task in tasks:
         df_task = pd.read_csv(
-                f"{data_folder}/{task}.csv",
+                f"{DATA_FOLDER}/{task}.csv",
                 header=None,
                 names=["timestamp", "status", "data"],
             )

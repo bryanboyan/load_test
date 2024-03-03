@@ -1,8 +1,9 @@
-from Config import config
 import signal
-from Metrics import metrics
-from SchedulerThread import SchedulerThread
-from Logger import Logger
+from tests.Config import config
+from tests.Logger import Logger
+from tests.Metrics import metrics
+from tests.SchedulerThread import SchedulerThread
+
 log = Logger("main").log
 
 request_names = config.get_tasks()
@@ -23,7 +24,7 @@ def signal_handler(signal, frame):
     for thread in scheduler_threads:
         thread.stop()
 
-    # exit(0)
+    exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 

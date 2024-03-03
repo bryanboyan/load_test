@@ -1,7 +1,7 @@
 from time import sleep
-from Metrics import metrics
-from RequestThread import RequestThread
-from Logger import Logger
+from tests.Metrics import metrics
+from tests.RequestThread import RequestThread
+from tests.Logger import Logger
 
 log = Logger("RequestThreadManager").log
 

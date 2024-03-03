@@ -1,5 +1,6 @@
+from pathlib import Path
+from typing import List, TypedDict
 import yaml
-from typing import List, TypedDict, Optional
 
 class RequestDefinition(TypedDict):
     url: str
@@ -10,9 +11,11 @@ class ScheduleShape(TypedDict):
     threads: int
     ramp: int
 
+file_path = Path(__file__).parent.parent / "config.yaml"
+
 class Config:
     def __init__(self):
-        with open("config.yaml", "r") as file:
+        with open(file_path, "r") as file:
             config_data = yaml.safe_load(file)
         self.tasks = config_data["tasks"]
         self.requests = config_data["requests"]

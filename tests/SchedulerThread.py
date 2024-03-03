@@ -1,11 +1,11 @@
 from time import time, sleep
 from threading import Thread, Event
 from typing import TypedDict, List
-from Config import config
-from Metrics import metrics
-from Request import Request
-from RequestThreadManager import RequestThreadManager
-from Logger import Logger
+from tests.Config import config
+from tests.Metrics import metrics
+from tests.Request import Request
+from tests.RequestThreadManager import RequestThreadManager
+from tests.Logger import Logger
 
 log = Logger("SchedulerThread").log
 

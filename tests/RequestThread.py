@@ -1,9 +1,9 @@
-from Config import config
-from Metrics import metrics
-from Request import Request
 from threading import Thread, Event
 from time import time, sleep
-from Logger import Logger
+from tests.Config import config
+from tests.Logger import Logger
+from tests.Metrics import metrics
+from tests.Request import Request
 
 log = Logger("RequestThread").log
 

@@ -1,4 +1,4 @@
-from Config import config
+from tests.Config import config
 import requests
 
 

@@ -1,10 +1,13 @@
+import csv
 from queue import Queue
 from threading import Thread, Event
 from time import time
+from tests.Logger import Logger
 
 DATA_FOLDER = "data"
 FLAG_FINISHED = "FINISHED"
 
+log = Logger("Metrics").log
 
 class RecorderBase(Thread):
     def __init__(self):
@@ -14,22 +17,30 @@ class RecorderBase(Thread):
 
     def filename(self):
         pass
-    
+
     def run(self):
         with open(self.filename(), "w") as file:
+            writer = csv.writer(file, delimiter=',')
             while not self.stop_event.is_set():
-                line = self.queue.get()
-                if line is FLAG_FINISHED:
+                try:
+                    log(f"Waiting for log line in {self.filename()}")
+                    line = self.queue.get()
+                    if line is FLAG_FINISHED:
+                        break
+                    writer.writerow(line)
+                    file.flush()
+                    self.queue.task_done()
+                except Exception as e:
+                    log(f"Error in {self.__class__.__name__}: {e}")
+                    file.close()
                     break
-                file.write(f"{line}\n")
-                file.flush()
-                self.queue.task_done()
+        log(f"Wrapped up file {self.filename()}")
 
     def stop(self):
         self.stop_event.set()
 
-    def log_line(self, line: str):
-        self.queue.put(line)
+    def enqueue(self, elems: list):
+        self.queue.put(elems)
 
     def log_finished(self):
         self.queue.put(FLAG_FINISHED)
@@ -43,7 +54,7 @@ class LoadRecorder(RecorderBase):
         return f"{DATA_FOLDER}/load.csv"
 
     def log_threads(self, request_name: str, current_threads: int):
-        self.log_line(f"{time():.4f},{request_name},{current_threads}")
+        self.enqueue([time(), request_name, current_threads])
 
 
 class MetricRecorder(RecorderBase):
@@ -55,10 +66,10 @@ class MetricRecorder(RecorderBase):
         return f"{DATA_FOLDER}/{self.request_name}.csv"
 
     def log_result(self, time: float, request_time: float):
-        self.log_line(f"{time:.4f},success,{request_time}")
+        self.enqueue([time, "success", request_time])
 
     def log_failure(self, time: float, status_code: int):
-        self.log_line(f"{time:.4f},failure,{status_code}")
+        self.enqueue([time, "failure", status_code])
 
 
 class Metrics:

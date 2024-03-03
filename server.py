@@ -1,6 +1,6 @@
 from flask import Flask, request
-from time import sleep
 import random
+from time import sleep
 from typing import Tuple
 
 # Given random request, return the sleep time and success flag
