@@ -1,4 +1,5 @@
 from time import sleep
+from Metrics import metrics
 from RequestThread import RequestThread
 from Logger import Logger
 
@@ -9,6 +10,7 @@ class RequestThreadManager:
     def __init__(self, request):
         self.threads = []
         self.request = request
+        self.load_recorder = metrics.get_load_recorder()
 
     def run(self, target_threads: int, ramp: int) -> None:
         """Run the threads with the target number of threads and ramp speed."""
@@ -33,6 +35,7 @@ class RequestThreadManager:
             thread = RequestThread(self.request)
             self.threads.append(thread)
             thread.start()
+            self.load_recorder.log_threads(self.request.name(), len(self.threads))
 
     def rampdown_threads(self, target_threads: int, ramp: int) -> None:
         """Ramp down the number of threads to the target number with ramp speed per second."""
@@ -47,6 +50,7 @@ class RequestThreadManager:
             thread = self.threads.pop()
             thread.stop()
             thread.join()
+            self.load_recorder.log_threads(self.request.name(), len(self.threads))
 
     def stop_all(self) -> None:
         """Stop all threads."""
@@ -54,3 +58,4 @@ class RequestThreadManager:
             thread.stop()
             thread.join()
         self.threads.clear()
+        self.load_recorder.log_threads(self.request.name(), len(self.threads))

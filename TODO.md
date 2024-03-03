@@ -5,6 +5,7 @@
 -[X] request builder
 -[X] Threads
 -[X] Debug overall
--[] data schema and plotly data
+-[X] data schema and plotly data
 -[] update storage
 -[] ideas multi core
+-[] properly close threads

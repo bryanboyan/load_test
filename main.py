@@ -22,9 +22,13 @@ def signal_handler(signal, frame):
     # Stop all opened threads (scheduling threads and metrics threads)
     for thread in scheduler_threads:
         thread.stop()
-        thread.join()
-    metrics.terminate()
 
-    exit(0)
+    # exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
+
+for thread in scheduler_threads:
+    thread.join()
+metrics.terminate()
+
+log("All threads finished, exiting...")
