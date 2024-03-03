@@ -22,9 +22,9 @@ class RequestThread(Thread):
             start_time = time()
             response = self.request.send()
             if response.status_code == 200:
-                recorder.log_result(time() - start_time)
+                recorder.log_result(time(), time() - start_time)
             else:
-                recorder.log_failure(response.status_code)
+                recorder.log_failure(time(), response.status_code)
             sleep(self.intervals)
         log(
             f"RequestThread: Finished for {self.request.name()} with thread name {self.name}"

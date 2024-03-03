@@ -18,12 +18,13 @@ for name in request_names:
 
 def signal_handler(signal, frame):
     log("Early termination, exiting...")
-    
+
     # Stop all opened threads (scheduling threads and metrics threads)
     for thread in scheduler_threads:
         thread.stop()
+        thread.join()
     metrics.terminate()
-    
+
     exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)

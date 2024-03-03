@@ -1,7 +1,7 @@
 from time import time, sleep
-from threading import Thread
+from threading import Thread, Event
 from typing import TypedDict, List
-from Config import ScheduleShape, config
+from Config import config
 from Metrics import metrics
 from Request import Request
 from RequestThreadManager import RequestThreadManager
@@ -9,31 +9,20 @@ from Logger import Logger
 
 log = Logger("SchedulerThread").log
 
-class ScheduleShape(TypedDict):
-    time: int
-    threads: int
-    ramp: int
-
-class SchedulerThread():
+class SchedulerThread(Thread):
     def __init__(self, request_name: str):
+        super().__init__()
+        self.stop_event = Event()
         request = Request(request_name)
         self.request = request
         self.thread_manager = RequestThreadManager(request)
         self.schedules = config.get_schedule_shape(request_name)
-        self.thread = None
-        self.running = False
 
-    def start(self) -> None:
-        self.running = True
-        if not self.thread:
-            self.thread = Thread(target=self.schedule)
-            self.thread.start()
-
-    def schedule(self) -> None:
+    def run(self) -> None:
         log(f"SchedulerThread: Running scheduler for {self.request.name()}")
         start_time = time()
         schedule_index = -1
-        while self.running:
+        while not self.stop_event.is_set():
             time_elapsed = time() - start_time
 
             # If time not elapsed, continue the current schedule
@@ -53,12 +42,11 @@ class SchedulerThread():
             if not has_schedule:
                 break
             sleep(0.5)
-        
+
         # Finished running all schedules, clean up
         self.thread_manager.stop_all()
         metrics.get_recorder(self.request.name()).log_finished()
         log(f"SchedulerThread: Scheduler for {self.request.name()} finished")
 
     def stop(self) -> None:
-        self.running = False
-        self.thread.join()
+        self.stop_event.set()

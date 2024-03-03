@@ -7,7 +7,7 @@ from typing import Tuple
 def random_params(failure_rate: float, max_sleep: int) -> Tuple[int, bool]:
     sleep_time = random.randint(0, int(max_sleep))
     r = random.random()
-    return [sleep_time, r >= float(failure_rate)]
+    return (sleep_time, r >= float(failure_rate))
 
 app = Flask(__name__)
 

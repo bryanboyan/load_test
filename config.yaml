@@ -1,4 +1,4 @@
-tasks: [random_get_fine]
+tasks: [random_get_fine, quick_get]
 
 requests:
   quick_get:
