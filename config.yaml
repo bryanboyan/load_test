@@ -1,4 +1,4 @@
-tasks: [random_get_fine, quick_get]
+tasks: [random_get_fine, quick_get, slow_post, random_post_bad]
 
 requests:
   quick_get:
