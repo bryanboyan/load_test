@@ -48,6 +48,10 @@ SHAPE_MODELS: # used as reference for reused shapes
     - {time: 80, threads: 30, ramp: 5}
     - {time: 100, threads: 50, ramp: 5}
     - {time: 120, threads: 10, ramp: 10}
+  short: &short_shape
+    - {time: 10, threads: 1, ramp: 1}
+    - {time: 40, threads: 5, ramp: 2}
+    - {time: 60, threads: 3, ramp: 2}
   test: &test_shape
     - {time: 10, threads: 1, ramp: 1}
 

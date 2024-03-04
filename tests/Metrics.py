@@ -1,8 +1,9 @@
 import csv
 from queue import Queue
 from threading import Thread, Event
-from time import time
+from time import time, sleep
 from tests.Logger import Logger
+import traceback
 
 DATA_FOLDER = "data"
 FLAG_FINISHED = "FINISHED"
@@ -19,27 +20,28 @@ class RecorderBase(Thread):
         pass
 
     def run(self):
+        log(f"Starting thread {self.name} for {self.__class__.__name__}")
         with open(self.filename(), "w") as file:
             writer = csv.writer(file, delimiter=',')
             while not self.stop_event.is_set():
                 try:
-                    log(f"Waiting for log line in {self.filename()}")
-                    line = self.queue.get()
-                    if line is FLAG_FINISHED:
+                    # log(f"Waiting for log line in {self.filename()}")
+                    row = self.queue.get()
+                    if row is FLAG_FINISHED:
                         break
-                    writer.writerow(line)
+                    writer.writerow(row)
                     file.flush()
                     self.queue.task_done()
                 except Exception as e:
-                    log(f"Error in {self.__class__.__name__}: {e}")
+                    log(f"Error in {self.__class__.__name__}: {str(e)}")
                     file.close()
                     break
-        log(f"Wrapped up file {self.filename()}")
+        log(f"Wrapped up class {self.__class__.__name__}, thread name {self.name}")
 
     def stop(self):
         self.stop_event.set()
 
-    def enqueue(self, elems: list):
+    def enqueue(self, elems: list[any]):
         self.queue.put(elems)
 
     def log_finished(self):
@@ -93,6 +95,8 @@ class Metrics:
         for thread in self.recorders.values():
             thread.stop()
             thread.join()
+        self.load_recorder.log_finished()
+        sleep(1)
         self.load_recorder.stop()
         self.load_recorder.join()
 

@@ -19,7 +19,7 @@ class SchedulerThread(Thread):
         self.schedules = config.get_schedule_shape(request_name)
 
     def run(self) -> None:
-        log(f"SchedulerThread: Running scheduler for {self.request.name()}")
+        log(f"Starting thread {self.name} for {self.__class__.__name__}")
         start_time = time()
         schedule_index = -1
         while not self.stop_event.is_set():
@@ -33,7 +33,6 @@ class SchedulerThread(Thread):
             has_schedule = False
             for i in range(schedule_index+1, len(self.schedules)):
                 schedule = self.schedules[i]
-                log(f"using {time_elapsed} to compare with {schedule['time']}")
                 if time_elapsed < schedule["time"]:
                     has_schedule = True
                     schedule_index = i
@@ -46,7 +45,7 @@ class SchedulerThread(Thread):
         # Finished running all schedules, clean up
         self.thread_manager.stop_all()
         metrics.get_recorder(self.request.name()).log_finished()
-        log(f"SchedulerThread: Scheduler for {self.request.name()} finished")
+        log(f"Scheduler for {self.request.name()} finished, thread name {self.name}")
 
     def stop(self) -> None:
         self.stop_event.set()

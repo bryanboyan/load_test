@@ -7,7 +7,7 @@ from tests.Config import config
 tasks = config.get_tasks()
 DATA_FOLDER = "data"
 
-def build_load_dataframe() -> pd.DataFrame:
+def build_load_dataframe() -> dict[str,pd.DataFrame]:
     load = pd.read_csv(
         f"{DATA_FOLDER}/load.csv", header=None, names=["timestamp", "task", "threads"]
     )
@@ -15,17 +15,14 @@ def build_load_dataframe() -> pd.DataFrame:
         raise FileNotFoundError("load.csv is empty")
 
     load["timestamp"] = pd.to_datetime(load["timestamp"], unit="s")
-    load_processed = []
+    df_loads = {}
     for task in tasks:
         load_task = load[load["task"] == task].copy()
+        load_task.sort_values(by="timestamp", inplace=True)
         load_task.set_index("timestamp", inplace=True)
         load_task = load_task.resample("1s").ffill()
-        load_task["task"] = task
-        load_processed.append(load_task)
-    load_final = pd.concat(load_processed)
-    load_final.reset_index(inplace=True)
-    load_final.sort_values(by=["timestamp", "task"], inplace=True)
-    return load_final
+        df_loads[task] = load_task
+    return df_loads
 
 def build_task_dataframes() -> dict[str,pd.DataFrame]:
     df_tasks = {}
@@ -55,17 +52,18 @@ def build_task_dataframes() -> dict[str,pd.DataFrame]:
 
 
 def get_xaxes_range(
-    df_tasks: dict[str, pd.DataFrame],
-    load_final: pd.DataFrame) -> tuple[pd.Timestamp, pd.Timestamp]:
-    min_timestamp = min(load_final["timestamp"])
-    max_timestamp = max(load_final["timestamp"])
-    for _, df in df_tasks.items():
-        min_timestamp = min(min_timestamp, min(df.index))
-        max_timestamp = max(max_timestamp, max(df.index))
-    return min_timestamp, max_timestamp
+    df_tasks: dict[str, pd.DataFrame], df_loads: dict[str, pd.DataFrame]
+) -> tuple[pd.Timestamp, pd.Timestamp]:
+    min_list, max_list = [], []
+    for task in tasks:
+        min_list.append(min(min(df_loads[task].index), min(df_tasks[task].index)))
+        max_list.append(max(max(df_loads[task].index), max(df_tasks[task].index)))
+    return min(min_list), max(max_list)
 
 
-def build_figure(df_tasks: dict[str, pd.DataFrame], load_final: pd.DataFrame) -> Figure:
+def build_figure(
+    df_tasks: dict[str, pd.DataFrame], df_loads: dict[str, pd.DataFrame]
+) -> Figure:
     fig = make_subplots(
         rows=len(df_tasks) + 1,
         cols=1,
@@ -125,10 +123,10 @@ def build_figure(df_tasks: dict[str, pd.DataFrame], load_final: pd.DataFrame) ->
 
     # Add threads graph
     for task in tasks:
-        task_df = load_final[load_final["task"] == task]
+        task_df = df_loads[task]
         fig.add_trace(
             go.Scatter(
-                x=task_df["timestamp"],
+                x=task_df.index,
                 y=task_df["threads"],
                 name=f"{task} Threads",
                 yaxis=f"y{row_index}",
@@ -138,7 +136,7 @@ def build_figure(df_tasks: dict[str, pd.DataFrame], load_final: pd.DataFrame) ->
         )
     fig.update_yaxes(title_text="Threads", row=row_index, col=1, secondary_y=False)
 
-    min_timestamp, max_timestamp = get_xaxes_range(df_tasks, load_final)
+    min_timestamp, max_timestamp = get_xaxes_range(df_tasks, df_loads)
     fig.update_layout(
         xaxis=dict(range=[min_timestamp, max_timestamp]), hovermode="x unified", title="Load Test Analysis"
     )
@@ -146,8 +144,9 @@ def build_figure(df_tasks: dict[str, pd.DataFrame], load_final: pd.DataFrame) ->
 
     return fig
 
+
 if __name__ == "__main__":
-    load_final = build_load_dataframe()
+    df_loads = build_load_dataframe()
     df_tasks = build_task_dataframes()
-    fig = build_figure(df_tasks, load_final)
+    fig = build_figure(df_tasks, df_loads)
     fig.show()

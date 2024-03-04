@@ -17,6 +17,7 @@ class RequestThread(Thread):
         self.intervals = config.get_request_interval_ms(request.name()) / 1000
 
     def run(self) -> None:
+        log(f"Starting thread {self.name} for {self.__class__.__name__}")
         recorder = metrics.get_recorder(self.request.name())
         while not self.stop_event.is_set():
             start_time = time()
