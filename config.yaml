@@ -1,4 +1,4 @@
-tasks: [random_get_fine, quick_get, slow_post, random_post_bad]
+tasks: [quick_get, quick_post, slow_get, slow_post, random_get_fine, random_post_bad]
 
 requests:
   quick_get:
@@ -52,13 +52,26 @@ SHAPE_MODELS: # used as reference for reused shapes
     - {time: 10, threads: 1, ramp: 1}
     - {time: 40, threads: 5, ramp: 2}
     - {time: 60, threads: 3, ramp: 2}
+  long: &long_shape:
+    - {time: 60, threads: 1, ramp: 1}
+    - {time: 90, threads: 5, ramp: 2}
+    - {time: 120, threads: 10, ramp: 2}
+    - {time: 180, threads: 30, ramp: 5}
+    - {time: 240, threads: 50, ramp: 5}
+    - {time: 320, threads: 10, ramp: 10}
   test: &test_shape
     - {time: 10, threads: 1, ramp: 1}
 
 shapes:
   quick_get:
     interval_ms: 100
+    shape: *long_shape
+  quick_post:
+    interval_ms: 100
     shape: *aggressive_shape
+  slow_get:
+    interval_ms: 100
+    shape: *slow_shape
   slow_post:
     interval_ms: 100
     shape: *medium_shape
