@@ -1,3 +1,20 @@
+# Installation
+
+Required python > v3.8
+`pip install -r requirements.txt`
+
+# Usages
+
+## Quick glance of output
+
+With the `data/`'s previous test result, after installation you are welcome to directly run the analyze_app.py and see localhost:8081 to 
+view the graphs to get a glance view of the outcome.
+
+## Run local setup
+
+1. Run the sample server for test endpoints. `python server.py`
+2. Configure the configs for testing. `config.yaml`. Default setting is connected to local server
+3. Run tester. `python tester.py`.
 
 # Architectural
 
