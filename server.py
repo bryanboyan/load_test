@@ -11,7 +11,7 @@ def random_params(failure_rate: float, max_sleep: int) -> Tuple[int, bool]:
 
 app = Flask(__name__)
 
-@app.route('/quick', methods=['GET'])
+@app.route('/quick/', methods=['GET'])
 def quick_get():
     return "success", 200
 

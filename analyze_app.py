@@ -1,4 +1,4 @@
-from Analyzer import build_load_dataframe, build_task_dataframes, build_figure
+from Analyzer import build_request_dataframes, build_response_dataframes, build_figure
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 from plotly.graph_objs import Figure
@@ -24,9 +24,9 @@ app.layout = html.Div(
     Output("live-update-graph", "figure"), Input("interval-component", "n_intervals")
 )
 def figure_pipeline(n) -> Figure:
-    load_final = build_load_dataframe()
-    df_tasks = build_task_dataframes()
-    return build_figure(df_tasks, load_final)
+    df_requests = build_request_dataframes()
+    df_responses = build_response_dataframes()
+    return build_figure(df_responses, df_requests)
 
 
 if __name__ == "__main__":

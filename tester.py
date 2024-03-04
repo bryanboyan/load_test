@@ -12,7 +12,7 @@ log = Logger("main").log
 request_names = config.get_tasks()
 
 for name in request_names:
-    metrics.init_recorder(name)
+    metrics.init_recorders(name)
 
 scheduler_threads = []
 for name in request_names:

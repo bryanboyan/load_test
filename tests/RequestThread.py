@@ -19,18 +19,24 @@ class RequestThread(Thread):
 
     def run(self) -> None:
         log(f"Starting thread {self.name} for {self.__class__.__name__}")
-        recorder = metrics.get_recorder(self.request.name())
+        request_recorder = metrics.get_request_recorder(self.request.name())
+        response_recorder = metrics.get_response_recorder(self.request.name())
+
         while not self.stop_event.is_set():
+            request_recorder.log_request()
+
             start_time = time()
             response, error = self.request.send()
-            
-            if error is not None:
-                log(f"Tester side request failed for {self.request.name()} with error {error}")
-            elif response.status_code == 200:
-                recorder.log_result(time(), time() - start_time)
+
+            if response is not None:
+                if response.status_code == 200:
+                    response_recorder.log_result(time(), time() - start_time)
+                else:
+                    response_recorder.log_failure(time(), response.status_code)
             else:
-                recorder.log_failure(time(), response.status_code)
-            
+                error = error if error is not None else "Unknown"
+                log(f"Tester side request failed for {self.request.name()} with error {error}")
+
             sleep(self.intervals)
         log(
             f"RequestThread: Finished for {self.request.name()} with thread name {self.name}"

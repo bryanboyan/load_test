@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import csv
 from queue import Queue
 from threading import Thread, Event
@@ -12,12 +13,14 @@ log = Logger("Metrics").log
 
 class RecorderBase(Thread):
     """Base class for threaded recorders with queue and stop event"""
-    def __init__(self):
+    def __init__(self, request_name: str):
         super().__init__()
+        self.request_name = request_name
         self.stop_event = Event()
         self.queue = Queue()
 
-    def filename(self):
+    @abstractmethod
+    def filename(self) -> str:
         pass
 
     def run(self):
@@ -26,7 +29,6 @@ class RecorderBase(Thread):
             writer = csv.writer(file, delimiter=',')
             while not self.stop_event.is_set():
                 try:
-                    # log(f"Waiting for log line in {self.filename()}")
                     row = self.queue.get()
                     if row is FLAG_FINISHED:
                         break
@@ -42,33 +44,28 @@ class RecorderBase(Thread):
     def stop(self):
         self.stop_event.set()
 
-    def enqueue(self, elems: list[any]):
+    def enqueue(self, elems: list):
         self.queue.put(elems)
 
     def log_finished(self):
         self.queue.put(FLAG_FINISHED)
 
 
-class LoadRecorder(RecorderBase):
+class RequestRecorder(RecorderBase):
     """Recorder thread to record the load change of load-tests"""
-    def __init__(self):
-        super().__init__()
 
-    def filename(self):
-        return f"{DATA_FOLDER}/load.csv"
+    def filename(self) -> str:
+        return f"{DATA_FOLDER}/request_{self.request_name}.csv"
 
-    def log_threads(self, request_name: str, current_threads: int):
-        self.enqueue([time(), request_name, current_threads])
+    def log_request(self):
+        self.enqueue([time()])
 
 
-class MetricRecorder(RecorderBase):
+class ResponseRecorder(RecorderBase):
     """Recorder thread to record the metrics of the request."""
-    def __init__(self, request_name: str):
-        super().__init__()
-        self.request_name = request_name
 
-    def filename(self):
-        return f"{DATA_FOLDER}/{self.request_name}.csv"
+    def filename(self) -> str:
+        return f"{DATA_FOLDER}/response_{self.request_name}.csv"
 
     def log_result(self, time: float, request_time: float):
         self.enqueue([time, "success", request_time])
@@ -80,29 +77,30 @@ class MetricRecorder(RecorderBase):
 class Metrics:
     """Singleton class to manage different types of recorders."""
     def __init__(self):
-        self.recorders = {}
-        self.load_recorder = LoadRecorder()
-        self.load_recorder.start()
+        self.request_recorders = {}
+        self.response_recorders = {}
 
-    def init_recorder(self, request_name: str) -> None:
-        if request_name not in self.recorders:
-            self.recorders[request_name] = MetricRecorder(request_name)
-            self.recorders[request_name].start()
+    def init_recorders(self, request_name: str) -> None:
+        if request_name not in self.request_recorders:
+            self.request_recorders[request_name] = RequestRecorder(request_name)
+            self.request_recorders[request_name].start()
+            self.response_recorders[request_name] = ResponseRecorder(request_name)
+            self.response_recorders[request_name].start()
 
-    def get_recorder(self, request_name: str) -> MetricRecorder:
-        return self.recorders[request_name]
+    def get_response_recorder(self, request_name: str) -> ResponseRecorder:
+        return self.response_recorders[request_name]
 
-    def get_load_recorder(self) -> LoadRecorder:
-        return self.load_recorder
+    def get_request_recorder(self, request_name: str) -> RequestRecorder:
+        return self.request_recorders[request_name]
 
     def terminate(self):
-        for thread in self.recorders.values():
+        for thread in self.request_recorders.values():
+            thread.log_finished()
             thread.stop()
             thread.join()
-        self.load_recorder.log_finished()
-        sleep(1)
-        self.load_recorder.stop()
-        self.load_recorder.join()
-
+        for thread in self.response_recorders.values():
+            thread.log_finished()
+            thread.stop()
+            thread.join()
 
 metrics = Metrics()

@@ -1,6 +1,7 @@
 import requests
 from tests.Config import config
 from tests.Logger import Logger
+from typing import Optional
 
 log = Logger("Request").log
 
@@ -17,7 +18,7 @@ class Request:
     def name(self) -> str:
         return self.request_name
 
-    def send(self) -> tuple[requests.Response, any]:
+    def send(self) -> tuple[Optional[requests.Response], Optional[str]]:
         try:
             if self.method == "GET":
                 return requests.get(self.url, params=self.params), None

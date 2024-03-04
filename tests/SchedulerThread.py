@@ -43,9 +43,10 @@ class SchedulerThread(Thread):
                 break
             sleep(0.5)
 
-        # Finished running all schedules, clean up
+        # Finished running all schedules, clean up both the request_threads andn metrics threads.
         self.thread_manager.stop_all()
-        metrics.get_recorder(self.request.name()).log_finished()
+        metrics.get_request_recorder(self.request.name()).log_finished()
+        metrics.get_response_recorder(self.request.name()).log_finished()
         log(f"Scheduler for {self.request.name()} finished, thread name {self.name}")
 
     def stop(self) -> None:
