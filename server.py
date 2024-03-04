@@ -3,7 +3,7 @@ import random
 from time import sleep
 from typing import Tuple
 
-# Given random request, return the sleep time and success flag
+# Given random request args, return the sleep time and success flag
 def random_params(failure_rate: float, max_sleep: int) -> Tuple[int, bool]:
     sleep_time = random.randint(0, int(max_sleep))
     r = random.random()

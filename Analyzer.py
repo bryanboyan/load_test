@@ -4,8 +4,9 @@ from plotly.subplots import make_subplots
 from plotly.graph_objs import Figure
 from tests.Config import config
 
+# Note: Make sure you configure the config.yaml to specify the tasks.
 tasks = config.get_tasks()
-DATA_FOLDER = "data"
+DATA_FOLDER = "data" # if data/ folder is poisoned, can use data/bakup folder
 
 def build_load_dataframe() -> dict[str,pd.DataFrame]:
     load = pd.read_csv(

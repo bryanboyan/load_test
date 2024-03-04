@@ -8,6 +8,7 @@ from tests.Request import Request
 log = Logger("RequestThread").log
 
 class RequestThread(Thread):
+    """Thread to call Request to actually send, and log results."""
 
     def __init__(self, request: Request):
         super().__init__()

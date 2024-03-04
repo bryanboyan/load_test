@@ -10,6 +10,7 @@ from tests.Logger import Logger
 log = Logger("SchedulerThread").log
 
 class SchedulerThread(Thread):
+    """Thread to scheduling the management (leveraging RequestThreadManager) of requests for a given request type"""
     def __init__(self, request_name: str):
         super().__init__()
         self.stop_event = Event()

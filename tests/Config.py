@@ -14,6 +14,8 @@ class ScheduleShape(TypedDict):
 file_path = Path(__file__).parent.parent / "config.yaml"
 
 class Config:
+    """Singleton class to enhance the config.yaml"""
+
     def __init__(self):
         with open(file_path, "r") as file:
             config_data = yaml.safe_load(file)

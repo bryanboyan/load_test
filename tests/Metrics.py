@@ -11,6 +11,7 @@ FLAG_FINISHED = "FINISHED"
 log = Logger("Metrics").log
 
 class RecorderBase(Thread):
+    """Base class for threaded recorders with queue and stop event"""
     def __init__(self):
         super().__init__()
         self.stop_event = Event()
@@ -49,6 +50,7 @@ class RecorderBase(Thread):
 
 
 class LoadRecorder(RecorderBase):
+    """Recorder thread to record the load change of load-tests"""
     def __init__(self):
         super().__init__()
 
@@ -60,6 +62,7 @@ class LoadRecorder(RecorderBase):
 
 
 class MetricRecorder(RecorderBase):
+    """Recorder thread to record the metrics of the request."""
     def __init__(self, request_name: str):
         super().__init__()
         self.request_name = request_name
@@ -75,6 +78,7 @@ class MetricRecorder(RecorderBase):
 
 
 class Metrics:
+    """Singleton class to manage different types of recorders."""
     def __init__(self):
         self.recorders = {}
         self.load_recorder = LoadRecorder()

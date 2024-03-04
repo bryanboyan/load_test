@@ -3,6 +3,11 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 from plotly.graph_objs import Figure
 
+"""
+This file establish a web service to automatically update the Analyzer graph every `interval` milliseconds.
+Start this service by running `python analyze_app.py`. If new configs are provided, restarting the call is needed.
+"""
+
 app = Dash(__name__)
 
 app.layout = html.Div(

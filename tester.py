@@ -20,6 +20,7 @@ for name in request_names:
     scheduler_threads.append(thread)
     thread.start()
 
+# Check remaining non-main threads left and dump for debugging purposes.
 def remaining_worker_threads() -> int:
     active_threads = enumerate()
     for t in active_threads:
@@ -33,6 +34,7 @@ def remaining_worker_threads() -> int:
             log("No stack for thread")
     return len(active_threads)
 
+# Handle early termination from users
 def signal_handler(_, __):
     log("Early termination, attempt to close all threads...")
 

@@ -2,6 +2,8 @@ from tests.Config import config
 from time import localtime, strftime
 
 class Logger:
+    """Logger class to log messages to console with ability to mute the actor."""
+    
     def __init__(self, caller: str):
         self.caller = caller
         self.muted = config.is_actor_muted(caller)

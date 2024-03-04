@@ -7,6 +7,7 @@ log = Logger("RequestThreadManager").log
 
 
 class RequestThreadManager:
+    """Directly manage the requsetThreads (threads up/down) for the request type."""
     def __init__(self, request):
         self.threads = []
         self.request = request

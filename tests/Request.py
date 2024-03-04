@@ -5,6 +5,8 @@ from tests.Logger import Logger
 log = Logger("Request").log
 
 class Request:
+    """Wrapper of the requests built from config to handle get and post """
+
     def __init__(self, request_name: str):
         self.request_name = request_name
         request_obj = config.get_request(request_name)
