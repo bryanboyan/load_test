@@ -52,7 +52,7 @@ SHAPE_MODELS: # used as reference for reused shapes
     - {time: 10, threads: 1, ramp: 1}
     - {time: 40, threads: 5, ramp: 2}
     - {time: 60, threads: 3, ramp: 2}
-  long: &long_shape:
+  long: &long_shape
     - {time: 60, threads: 1, ramp: 1}
     - {time: 90, threads: 5, ramp: 2}
     - {time: 120, threads: 10, ramp: 2}
