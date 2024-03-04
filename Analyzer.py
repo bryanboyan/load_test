@@ -21,7 +21,7 @@ def build_request_dataframes() -> dict[str,pd.DataFrame]:
             raise FileNotFoundError(f"request_{task}.csv is empty")
         df_task["timestamp"] = pd.to_datetime(df_task["timestamp"], unit="s")
         df_task.set_index("timestamp", inplace=True)
-        df_task = df_task.resample('S').size().to_frame('count')
+        df_task = df_task.resample('s').size().to_frame('count')
         df_requests[task] = df_task
     return df_requests
 
