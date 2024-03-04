@@ -20,6 +20,7 @@ class Config:
         self.tasks = config_data["tasks"]
         self.requests = config_data["requests"]
         self.shapes = config_data["shapes"]
+        self.logging = config_data.get("logging", dict())
         self.config_data = config_data
 
         # sanity check configs
@@ -38,5 +39,10 @@ class Config:
 
     def get_request_interval_ms(self, request_name) -> int:
         return self.shapes[request_name]["interval_ms"]
+
+    def is_actor_muted(self, actor) -> bool:
+        if self.logging.get('allowed_actors'):
+            return actor not in self.logging['allowed_actors']
+        return False
 
 config = Config()

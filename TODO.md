@@ -8,4 +8,4 @@
 -[X] data schema and plotly data
 -[] update storage
 -[] ideas multi core
--[] properly close threads
+-[X] properly close threads

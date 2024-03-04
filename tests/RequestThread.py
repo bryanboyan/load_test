@@ -21,11 +21,15 @@ class RequestThread(Thread):
         recorder = metrics.get_recorder(self.request.name())
         while not self.stop_event.is_set():
             start_time = time()
-            response = self.request.send()
-            if response.status_code == 200:
+            response, error = self.request.send()
+            
+            if error is not None:
+                log(f"Tester side request failed for {self.request.name()} with error {error}")
+            elif response.status_code == 200:
                 recorder.log_result(time(), time() - start_time)
             else:
                 recorder.log_failure(time(), response.status_code)
+            
             sleep(self.intervals)
         log(
             f"RequestThread: Finished for {self.request.name()} with thread name {self.name}"

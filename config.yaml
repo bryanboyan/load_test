@@ -1,4 +1,4 @@
-tasks: [random_get_fine]
+tasks: [random_get_fine, quick_get]
 
 requests:
   quick_get:
@@ -57,11 +57,23 @@ SHAPE_MODELS: # used as reference for reused shapes
 
 shapes:
   quick_get:
-    interval_ms: 500
+    interval_ms: 100
     shape: *aggressive_shape
   slow_post:
-    interval_ms: 500
+    interval_ms: 100
     shape: *medium_shape
   random_get_fine:
-    interval_ms: 500
+    interval_ms: 100
     shape: *slow_shape
+  random_post_bad:
+    interval_ms: 100
+    shape: *medium_shape
+
+logging:
+  allowed_actors: # if not set, allow all actors
+    - main
+    - Metrics
+    - SchedulerThread
+    - RequestThreadManager
+    # - RequestThread
+    - Request

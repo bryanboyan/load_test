@@ -1,6 +1,8 @@
-from tests.Config import config
 import requests
+from tests.Config import config
+from tests.Logger import Logger
 
+log = Logger("Request").log
 
 class Request:
     def __init__(self, request_name: str):
@@ -13,10 +15,15 @@ class Request:
     def name(self) -> str:
         return self.request_name
 
-    def send(self) -> requests.Response:
-        if self.method == "GET":
-            return requests.get(self.url, params=self.params)
-        elif self.method == "POST":
-            return requests.post(self.url, json=self.params)
-        else:
-            raise ValueError(f"Unsupported method {self.method}")
+    def send(self) -> tuple[requests.Response, any]:
+        try:
+            if self.method == "GET":
+                return requests.get(self.url, params=self.params), None
+            elif self.method == "POST":
+                return requests.post(self.url, json=self.params), None
+            else:
+                raise ValueError(f"Unsupported method {self.method}")
+        except Exception as ex:
+            error_name = type(ex).__name__
+            log(f"Request failed for {self.request_name} with error {error_name}")
+            return None, error_name

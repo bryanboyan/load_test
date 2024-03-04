@@ -20,9 +20,11 @@ for name in request_names:
     scheduler_threads.append(thread)
     thread.start()
 
-def check_threads() -> int:
+def remaining_worker_threads() -> int:
     active_threads = enumerate()
     for t in active_threads:
+        if t.name == "MainThread":
+            continue
         log(f"{t.ident}. name {t.name}")
         stack = sys._current_frames().get(t.ident, None)
         if stack:
@@ -32,13 +34,15 @@ def check_threads() -> int:
     return len(active_threads)
 
 def signal_handler(_, __):
-    log("Early termination, exiting...")
+    log("Early termination, attempt to close all threads...")
 
     # Stop all opened threads (scheduling threads and metrics threads)
     for thread in scheduler_threads:
         thread.stop()
+        thread.join()
+    metrics.terminate()
 
-    num_active_threads = check_threads()
+    num_active_threads = remaining_worker_threads()
 
     exit(num_active_threads)
 
