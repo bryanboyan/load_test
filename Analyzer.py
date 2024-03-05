@@ -93,7 +93,7 @@ def build_figure(
                 secondary_y=False,
             )
         fig.update_yaxes(
-            title_text="Latency (seconds)",
+            title_text="Latency (sec)",
             tickformat='.4f',
             row=row_index,
             col=1,
