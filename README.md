@@ -1,20 +1,29 @@
-# Installation
+# Overview
 
-Required python > v3.8
-`pip install -r requirements.txt`
+This module provides components and systems to conduct load-testing to your endpoint. It has multiple key features:
+1. Configure both get and post requests
+2. Define reusable shapes to test your endpoints including wait time, ramp up and down.
+3. Leverages multi-threaded system to increase concurrency
+4. Live view the test result as it runs, with interactability to slice/dice.
+5. Store data for future analysis
 
 # Usages
 
-## Quick glance of output
+## Installation
 
-With the `data/`'s previous test result, after installation you are welcome to directly run the analyze_app.py and see localhost:8081 to 
-view the graphs to get a glance view of the outcome.
+Required python > v3.8
+`pip install -r requirements.txt`
 
 ## Run local setup
 
 1. Run the sample server for test endpoints. `python server.py`
 2. Configure the configs for testing. `config.yaml`. Default setting is connected to local server
 3. Run tester. `python tester.py`.
+
+## Quick glance of output
+
+With the `data/`'s previous test result, after installation you are welcome to directly run the analyze_app.py and see localhost:8081 to 
+view the graphs to get a glance view of the outcome.
 
 # Architectural
 
